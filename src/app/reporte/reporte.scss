@@ -1,0 +1,259 @@
+// ── Layout ──────────────────────────────────────────────
+.reporte-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f8fafc;
+}
+
+.reporte-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.btn-volver {
+  font-size: 14px;
+  color: #3b82f6;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  &:active { opacity: 0.7; }
+}
+
+.reporte-titulo {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.reporte-cuerpo {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// ── Selector de rango ────────────────────────────────────
+.botones-rapidos {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-rapido {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  font-size: 13px;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 100ms, color 100ms, border-color 100ms;
+
+  &.activo {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  &:active { opacity: 0.75; }
+}
+
+.rango-manual {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rango-fecha-input {
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  box-sizing: border-box;
+
+  &:focus { border-color: #3b82f6; }
+}
+
+.rango-sep {
+  font-size: 16px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+// ── Secciones ────────────────────────────────────────────
+.seccion-reporte {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.seccion-titulo-rep {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  margin: 0 0 2px;
+}
+
+.seccion-vacia {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+// ── Barra de progreso ────────────────────────────────────
+.barra {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.barra-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+// ── Tarjetas ─────────────────────────────────────────────
+.stat-principal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-numero {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1e293b;
+  flex-shrink: 0;
+}
+
+.stat-porcentaje {
+  font-size: 16px;
+  font-weight: 700;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.incompletas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 4px;
+}
+
+.incompletas-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.incompleta-item {
+  font-size: 13px;
+  color: #475569;
+  padding: 5px 0;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child { border-bottom: none; }
+}
+
+// ── Hábitos ──────────────────────────────────────────────
+.habito-rep-fila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.habito-rep-nombre {
+  flex: 1;
+  font-size: 14px;
+  color: #1e293b;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.habito-rep-stat {
+  font-size: 12px;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.habito-rep-pct {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  flex-shrink: 0;
+  width: 38px;
+  text-align: right;
+}
+
+// ── Notas ────────────────────────────────────────────────
+.nota-rep-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+
+  &:last-child { border-bottom: none; }
+}
+
+.nota-rep-fecha {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.nota-rep-contenido {
+  font-size: 14px;
+  color: #334155;
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+// ── Estados ──────────────────────────────────────────────
+.estado-mensaje {
+  padding: 32px 16px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.error-banner {
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+}

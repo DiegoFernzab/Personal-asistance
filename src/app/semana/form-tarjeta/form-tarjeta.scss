@@ -1,0 +1,107 @@
+.sheet {
+  width: 100%;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+  margin: 0 auto 4px;
+}
+
+.sheet-titulo {
+  font-size: 17px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.error-msg {
+  font-size: 13px;
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+  }
+
+  input[type='text'],
+  input[type='time'],
+  select {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+    color: #111827;
+    background: #f9fafb;
+    width: 100%;
+    box-sizing: border-box;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    &:focus {
+      border-color: #3b82f6;
+      background: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+    }
+  }
+}
+
+.campos-hora {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn-cancelar,
+.btn-guardar {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-guardar {
+  background: #3b82f6;
+  color: #fff;
+
+  &:active {
+    background: #2563eb;
+  }
+}

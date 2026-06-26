@@ -1,0 +1,310 @@
+// ── Variables (igual que semana.scss) ─────────────────────
+$color-no-empezado: #dbeafe;
+$color-en-proceso:  #fef3c7;
+$color-completado:  #d1fae5;
+$chip-no-empezado:  #3b82f6;
+$chip-en-proceso:   #f59e0b;
+$chip-completado:   #10b981;
+
+// ── Layout ─────────────────────────────────────────────────
+.hoy-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #f8fafc;
+}
+
+.hoy-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px 10px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.hoy-fecha {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.btn-reporte {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  color: #64748b;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &:active { opacity: 0.6; }
+}
+
+.hoy-contenido {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// ── Secciones ──────────────────────────────────────────────
+.seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.seccion-titulo {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin: 0 0 2px;
+}
+
+.seccion-habitos {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+// ── Tarjetas ───────────────────────────────────────────────
+.tarjeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  position: relative;
+
+  &.estado-no-empezado { background: $color-no-empezado; }
+  &.estado-en-proceso  { background: $color-en-proceso; }
+  &.estado-completado  { background: $color-completado; }
+}
+
+.chip-estado {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+  cursor: pointer;
+
+  .estado-no-empezado & { background: $chip-no-empezado; }
+  .estado-en-proceso  & { background: $chip-en-proceso; }
+  .estado-completado  & { background: $chip-completado; }
+}
+
+.tarjeta-titulo {
+  flex: 1;
+  color: #1e293b;
+}
+
+.btn-borrar-tarjeta {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  &:active { background: #dc2626; }
+}
+
+.tarjeta-descripcion {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.3;
+  margin-top: 3px;
+  padding-left: 18px;
+  white-space: pre-wrap;
+}
+
+.tarjeta-hora {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// ── Hábitos ────────────────────────────────────────────────
+.habito-fila-con-hora {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #EEEDFE;
+  font-size: 14px;
+
+  .habito-titulo {
+    color: #26215C;
+
+    &.cumplido {
+      color: #9691C4;
+      text-decoration: line-through;
+    }
+  }
+
+  .tarjeta-hora {
+    color: #534AB7;
+  }
+
+  &:active { opacity: 0.7; }
+}
+
+.habito-icono-rep {
+  font-size: 16px;
+  color: #3C3489;
+  flex-shrink: 0;
+  line-height: 1;
+
+  &.cumplido {
+    color: $chip-completado;
+  }
+}
+
+.habito-fila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.habito-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  flex-shrink: 0;
+  transition: background 150ms ease, border-color 150ms ease;
+
+  &.cumplido {
+    background: $chip-completado;
+    border-color: $chip-completado;
+  }
+}
+
+.habito-titulo {
+  font-size: 15px;
+  color: #334155;
+
+  &.cumplido {
+    color: #94a3b8;
+    text-decoration: line-through;
+  }
+}
+
+// ── Mensajes ───────────────────────────────────────────────
+.vacio-msg {
+  font-size: 14px;
+  color: #94a3b8;
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+.estado-mensaje {
+  padding: 32px 16px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.error-banner {
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+// ── Nota del día ───────────────────────────────────────────
+.nota-seccion {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nota-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.nota-textarea {
+  width: 100%;
+  min-height: 88px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #334155;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  background: #fff;
+
+  &::placeholder { color: #cbd5e1; }
+
+  &:focus { border-color: #3b82f6; }
+}
+
+.nota-estado {
+  font-size: 11px;
+  color: transparent;
+  text-align: right;
+  min-height: 16px;
+  transition: color 150ms;
+
+  &.guardando { color: #f59e0b; }
+  &.guardado  { color: #10b981; }
+  &.error     { color: #dc2626; }
+}

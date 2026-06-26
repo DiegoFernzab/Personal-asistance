@@ -1,0 +1,558 @@
+// ── Variables ─────────────────────────────────────────────
+$px-hora: 64px;
+$horas-grilla: 15;                          // 7:00 a 22:00
+$alto-grilla-total: $px-hora * $horas-grilla; // 960px
+
+$ancho-col-horas: 44px;
+$ancho-col-dia: 130px;
+$alto-header-dia: 40px;
+$alto-sin-hora-min: 32px;
+
+$color-no-empezado: #dbeafe;
+$color-en-proceso: #fef3c7;
+$color-completado: #d1fae5;
+$chip-no-empezado: #3b82f6;
+$chip-en-proceso: #f59e0b;
+$chip-completado: #10b981;
+
+$color-bloque-fijo-bg: #e0e7ff;
+$color-bloque-fijo-borde: #6366f1;
+
+// ── Layout principal ───────────────────────────────────────
+.semana-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+// ── Cabecera de navegación ─────────────────────────────────
+.semana-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  gap: 4px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.semana-label {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.header-derecha {
+  display: flex;
+  align-items: center;
+}
+
+.btn-bloques {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+
+  &:active { color: #1e293b; }
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0 8px;
+  line-height: 1;
+
+  &:active { color: #1e293b; }
+}
+
+// ── Estados de carga ───────────────────────────────────────
+.estado-mensaje {
+  padding: 32px 16px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+// ── Scroll de la grilla ────────────────────────────────────
+.grilla-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// ── CSS Grid: 8 columnas × 3 filas ────────────────────────
+// Col 1: etiquetas de hora ($ancho-col-horas)
+// Cols 2-8: días ($ancho-col-dia × 7)
+// Fila 1: cabeceras  — altura fija ($alto-header-dia)
+// Fila 2: sin hora   — altura automática (CSS Grid iguala entre columnas)
+// Fila 3: grilla horaria — altura fija ($alto-grilla-total)
+.grilla-dias {
+  display: grid;
+  grid-template-columns: $ancho-col-horas repeat(7, $ancho-col-dia);
+  grid-template-rows: $alto-header-dia auto $alto-grilla-total;
+  min-width: fit-content;
+}
+
+// ── Columna de horas: 3 celdas sticky horizontalmente ─────
+.col-horas-header,
+.sin-hora-espacio,
+.col-horas-grid {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  border-right: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.col-horas-header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sin-hora-espacio {
+  // La fila auto alinea esta celda con la más alta de sin-hora
+  min-height: $alto-sin-hora-min;
+  border-bottom: 2px solid #e2e8f0;
+  background: #fafafa;
+}
+
+.col-horas-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.etiqueta-hora {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 6px;
+  padding-top: 2px;
+  font-size: 10px;
+  color: #94a3b8;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+// ── Cabecera de cada día ───────────────────────────────────
+.col-dia-header {
+  height: $alto-header-dia;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  background: #fff;
+
+  &.hoy-header { background: #fef3c7; }
+}
+
+.dia-nombre {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+// ── Sección sin hora ───────────────────────────────────────
+.sin-hora {
+  min-height: $alto-sin-hora-min;
+  padding: 3px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  border-bottom: 2px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  background: #fafafa;
+
+  &.es-hoy { background: #fffbeb; }
+  &.cdk-drop-list-dragging  { background: #f1f5f9; }
+  &.cdk-drop-list-receiving { background: #f1f5f9; }
+}
+
+.sin-hora-vacia {
+  min-height: $alto-sin-hora-min - 6px;
+}
+
+// ── Grilla horaria (posicionamiento absoluto) ──────────────
+.grilla-horaria {
+  position: relative;
+  border-right: 1px solid #e2e8f0;
+  overflow: hidden;
+  cursor: pointer; // clic sobre fondo vacío abre el formulario
+
+  &.es-hoy { background: #fffbeb; }
+
+  &.cdk-drop-list-receiving {
+    background: rgba(59, 130, 246, 0.06);
+  }
+}
+
+// Líneas de hora: solo visuales, no interactivas
+.linea-hora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e2e8f0;
+  pointer-events: none;
+}
+
+// ── Tarjetas ───────────────────────────────────────────────
+.tarjeta {
+  width: 100%;
+  border-radius: 5px;
+  padding: 4px 6px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  font-size: 11px;
+  line-height: 1.3;
+  cursor: default;
+  position: relative;
+
+  &.estado-no-empezado { background: $color-no-empezado; }
+  &.estado-en-proceso  { background: $color-en-proceso; }
+  &.estado-completado  { background: $color-completado; }
+}
+
+.tarjeta--sin-hora {
+  cursor: grab;
+
+  &:active { cursor: grabbing; }
+
+  &.cdk-drag-preview {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0.95;
+  }
+
+  &.cdk-drag-placeholder { opacity: 0.3; }
+}
+
+// Tarjetas con hora: posición absoluta dentro de .grilla-horaria
+.tarjeta--con-hora {
+  position: absolute;
+  box-sizing: border-box;
+  // width/height/top/left se aplican vía bindings [style.*]
+  cursor: grab;
+  z-index: 2; // encima de .linea-hora
+
+  .tarjeta-titulo {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  &:active { cursor: grabbing; }
+
+  &.cdk-drag-preview {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0.95;
+  }
+}
+
+.chip-estado {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: pointer;
+
+  .estado-no-empezado & { background: $chip-no-empezado; }
+  .estado-en-proceso  & { background: $chip-en-proceso; }
+  .estado-completado  & { background: $chip-completado; }
+}
+
+.tarjeta-titulo {
+  flex: 1;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+.tarjeta-hora {
+  font-size: 10px;
+  color: #64748b;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-borrar-tarjeta {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 5;
+
+  &:active { background: #dc2626; }
+}
+
+// ── Bloques fijos: posición absoluta ──────────────────────
+.bloque-fijo {
+  position: absolute;
+  box-sizing: border-box;
+  // width/height/top/left se aplican vía bindings [style.*]
+  border-radius: 5px;
+  padding: 4px 6px;
+  background: $color-bloque-fijo-bg;
+  border-left: 3px solid $color-bloque-fijo-borde;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 11px;
+  cursor: default;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.bloque-fijo-hora {
+  font-size: 10px;
+  color: #6366f1;
+  font-weight: 500;
+}
+
+.bloque-fijo-titulo {
+  color: #312e81;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+// ── FAB ────────────────────────────────────────────────────
+.fab {
+  position: fixed;
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 16px);
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  font-size: 30px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.45);
+  z-index: 50;
+
+  &:active { background: #2563eb; }
+}
+
+// ── Overlay del formulario ─────────────────────────────────
+.formulario-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+// ── Banner de error ────────────────────────────────────────
+.error-banner {
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+// ── Sheet: gestión de bloques fijos ───────────────────────
+.bloques-sheet {
+  width: 100%;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 85vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 2px;
+  align-self: center;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.bloques-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.bloques-vacios {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.bloque-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.bloque-dia {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6366f1;
+  background: #e0e7ff;
+  border-radius: 4px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+}
+
+.bloque-info {
+  flex: 1;
+  font-size: 13px;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-eliminar-bloque {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+
+  &:active { color: #dc2626; }
+}
+
+.separador {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 2px 0;
+  flex-shrink: 0;
+}
+
+.form-subtitulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.b-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: -6px;
+}
+
+.b-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-size: 14px;
+  color: #1e293b;
+  box-sizing: border-box;
+  background: #fff;
+  outline: none;
+
+  &:focus { border-color: #3b82f6; }
+  &:disabled { background: #f8fafc; color: #94a3b8; }
+}
+
+.campos-hora-bloque {
+  display: flex;
+  gap: 10px;
+}
+
+.b-campo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.btn-cancelar {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 15px;
+  color: #64748b;
+  cursor: pointer;
+
+  &:active { background: #e2e8f0; }
+}
+
+.btn-guardar {
+  flex: 1;
+  padding: 11px;
+  border-radius: 10px;
+  border: none;
+  background: #3b82f6;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+
+  &:disabled { background: #93c5fd; cursor: default; }
+  &:not(:disabled):active { background: #2563eb; }
+}
+
+// ── Animación de drag ──────────────────────────────────────
+.cdk-drag-animating {
+  transition: transform 200ms ease;
+}
+
+.sin-hora.cdk-drop-list-dragging .tarjeta--sin-hora:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}

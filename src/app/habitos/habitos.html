@@ -1,0 +1,136 @@
+<div class="habitos-page">
+
+  <header class="habitos-header">
+    <span class="habitos-titulo">Hábitos</span>
+  </header>
+
+  @if (error()) {
+    <div class="error-banner" (click)="limpiarError()">{{ error() }} ✕</div>
+  }
+
+  @if (cargando()) {
+    <div class="estado-mensaje">Cargando…</div>
+  } @else {
+
+    <div class="lista-habitos">
+
+      @if (habitosConEstado().length === 0) {
+        <div class="lista-vacia">Sin hábitos todavía. Usa el + para agregar uno.</div>
+      }
+
+      @for (hce of habitosConEstado(); track hce.habito.id) {
+        <div class="habito-item" [class.no-aplica-hoy]="!hce.aplicaHoy">
+
+          <button
+            class="btn-check"
+            [class.cumplido]="hce.cumplidoHoy"
+            [disabled]="!hce.aplicaHoy"
+            (click)="toggleCumplido(hce)"
+            [attr.aria-label]="hce.cumplidoHoy ? 'Desmarcar' : 'Marcar cumplido'">
+            @if (hce.cumplidoHoy) { ✓ } @else { ○ }
+          </button>
+
+          <span class="habito-nombre" [class.tachado]="hce.cumplidoHoy">
+            {{ hce.habito.titulo }}
+          </span>
+
+          @if (!hce.aplicaHoy) {
+            <span class="chip-no-aplica">hoy no</span>
+          } @else if (hce.racha > 0) {
+            <span class="chip-racha">🔥 {{ hce.racha }}</span>
+          }
+
+        </div>
+      }
+
+    </div>
+
+  }
+
+  <!-- FAB: nuevo hábito -->
+  <button class="fab" (click)="abrirFormulario()" aria-label="Nuevo hábito">+</button>
+
+  <!-- Overlay del formulario -->
+  @if (formularioAbierto()) {
+    <div class="formulario-overlay" (click)="cerrarFormulario()">
+      <div class="formulario-sheet" (click)="$event.stopPropagation()">
+
+        <h2 class="form-titulo">Nuevo hábito</h2>
+
+        <label class="form-label" for="habito-nombre">Nombre</label>
+        <input
+          id="habito-nombre"
+          class="form-input"
+          type="text"
+          placeholder="Ej. Leer 20 minutos"
+          [value]="formNombre()"
+          (input)="formNombre.set($any($event.target).value)"
+          autocomplete="off" />
+
+        <label class="form-label">Frecuencia</label>
+        <div class="form-radio-group">
+          <label class="form-radio">
+            <input type="radio" name="recurrencia" value="diaria"
+                   [checked]="formRecurrencia() === 'diaria'"
+                   (change)="formRecurrencia.set('diaria')" />
+            Diaria
+          </label>
+          <label class="form-radio">
+            <input type="radio" name="recurrencia" value="dias_especificos"
+                   [checked]="formRecurrencia() === 'dias_especificos'"
+                   (change)="formRecurrencia.set('dias_especificos')" />
+            Días específicos
+          </label>
+        </div>
+
+        @if (formRecurrencia() === 'dias_especificos') {
+          <div class="form-dias">
+            @for (dia of diasSemana; track dia.valor) {
+              <button
+                class="dia-chip"
+                [class.seleccionado]="formDias().includes(dia.valor)"
+                (click)="toggleDia(dia.valor)"
+                type="button">
+                {{ dia.etiqueta }}
+              </button>
+            }
+          </div>
+        }
+
+        <label class="form-label">Hora (opcional)</label>
+        <div class="form-hora-row">
+          <input
+            class="form-input form-hora-input"
+            type="time"
+            placeholder="Inicio"
+            [value]="formHoraInicio()"
+            (change)="formHoraInicio.set($any($event.target).value)" />
+          <span class="form-hora-sep">–</span>
+          <input
+            class="form-input form-hora-input"
+            type="time"
+            placeholder="Fin"
+            [value]="formHoraFin()"
+            (change)="formHoraFin.set($any($event.target).value)"
+            [disabled]="!formHoraInicio()" />
+        </div>
+
+        <div class="form-acciones">
+          <button class="btn-cancelar" type="button" (click)="cerrarFormulario()">
+            Cancelar
+          </button>
+          <button
+            class="btn-guardar"
+            type="button"
+            [disabled]="!formNombre().trim() || guardando() ||
+                        (formRecurrencia() === 'dias_especificos' && formDias().length === 0)"
+            (click)="crearHabito()">
+            {{ guardando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

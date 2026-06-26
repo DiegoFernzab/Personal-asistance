@@ -1,0 +1,119 @@
+<div class="hoy-page">
+
+  <header class="hoy-header">
+    <h1 class="hoy-fecha">{{ etiquetaFecha }}</h1>
+    <a class="btn-reporte" routerLink="/reporte" aria-label="Ver reporte">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 20V10M12 20V4M6 20v-6"/>
+      </svg>
+    </a>
+  </header>
+
+  @if (error()) {
+    <div class="error-banner" (click)="limpiarError()">{{ error() }} ✕</div>
+  }
+
+  @if (cargando()) {
+    <div class="estado-mensaje">Cargando…</div>
+  } @else {
+
+    <div class="hoy-contenido">
+
+      <!-- Lista mezclada con hora: tarjetas + hábitos ordenados por hora_inicio -->
+      @if (conHoraMixto().length > 0) {
+        <section class="seccion">
+          <h2 class="seccion-titulo">Programado</h2>
+          @for (item of conHoraMixto(); track $index) {
+            @if (item.tipo === 'tarjeta') {
+              <div
+                class="tarjeta"
+                [class.estado-no-empezado]="item.tarjeta.estado === 'no_empezado'"
+                [class.estado-en-proceso]="item.tarjeta.estado === 'en_proceso'"
+                [class.estado-completado]="item.tarjeta.estado === 'completado'">
+                <span class="chip-estado" (click)="cambiarEstado(item.tarjeta)"></span>
+                <span class="tarjeta-titulo">{{ item.tarjeta.titulo }}</span>
+                <button class="btn-borrar-tarjeta" (click)="borrarTarjeta(item.tarjeta); $event.stopPropagation()" aria-label="Eliminar tarjeta">✕</button>
+                @if (item.tarjeta.descripcion) {
+                  <span class="tarjeta-descripcion">{{ item.tarjeta.descripcion }}</span>
+                }
+                <span class="tarjeta-hora">
+                  {{ formatHoraRango(item.tarjeta.hora_inicio!, item.tarjeta.hora_fin) }}
+                </span>
+              </div>
+            } @else {
+              <div
+                class="habito-fila habito-fila-con-hora"
+                (click)="toggleHabito({ habito: item.habito, cumplido: item.cumplido })">
+                <span class="habito-icono-rep" [class.cumplido]="item.cumplido">↻</span>
+                <span class="habito-titulo" [class.cumplido]="item.cumplido">{{ item.habito.titulo }}</span>
+                <span class="tarjeta-hora">
+                  {{ formatHoraRango(item.habito.hora_inicio!, item.habito.hora_fin) }}
+                </span>
+              </div>
+            }
+          }
+        </section>
+      }
+
+      <!-- Tarjetas sin hora -->
+      @if (sinHora().length > 0) {
+        <section class="seccion">
+          <h2 class="seccion-titulo">Sin hora</h2>
+          @for (t of sinHora(); track t.id) {
+            <div
+              class="tarjeta"
+              [class.estado-no-empezado]="t.estado === 'no_empezado'"
+              [class.estado-en-proceso]="t.estado === 'en_proceso'"
+              [class.estado-completado]="t.estado === 'completado'">
+              <span class="chip-estado" (click)="cambiarEstado(t)"></span>
+              <span class="tarjeta-titulo">{{ t.titulo }}</span>
+              <button class="btn-borrar-tarjeta" (click)="borrarTarjeta(t); $event.stopPropagation()" aria-label="Eliminar tarjeta">✕</button>
+              @if (t.descripcion) {
+                <span class="tarjeta-descripcion">{{ t.descripcion }}</span>
+              }
+            </div>
+          }
+        </section>
+      }
+
+      @if (conHoraMixto().length === 0 && sinHora().length === 0 && habitosSinHora().length === 0) {
+        <p class="vacio-msg">Sin actividades para hoy.</p>
+      }
+
+      <!-- Hábitos sin hora -->
+      @if (habitosSinHora().length > 0) {
+        <section class="seccion seccion-habitos">
+          <h2 class="seccion-titulo">Hábitos</h2>
+          @for (item of habitosSinHora(); track item.habito.id) {
+            <div class="habito-fila" (click)="toggleHabito(item)">
+              <span class="habito-dot" [class.cumplido]="item.cumplido"></span>
+              <span class="habito-titulo" [class.cumplido]="item.cumplido">{{ item.habito.titulo }}</span>
+            </div>
+          }
+        </section>
+      }
+
+      <!-- Nota del día -->
+      <section class="nota-seccion">
+        <span class="nota-label">Nota del día</span>
+        <textarea
+          class="nota-textarea"
+          placeholder="¿Cómo fue tu día?"
+          [value]="notaContenido()"
+          (input)="onNotaInput($any($event.target).value)"></textarea>
+        <div
+          class="nota-estado"
+          [class.guardando]="notaGuardando()"
+          [class.guardado]="notaGuardada() && !notaGuardando()"
+          [class.error]="!!notaError()">
+          @if (notaGuardando()) { Guardando… }
+          @else if (notaError()) { {{ notaError() }} }
+          @else if (notaGuardada()) { Guardado ✓ }
+        </div>
+      </section>
+
+    </div>
+
+  }
+
+</div>

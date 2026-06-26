@@ -1,0 +1,234 @@
+<div class="semana-page">
+
+  <!-- Cabecera de navegación -->
+  <header class="semana-header">
+    <button class="nav-btn" (click)="irSemana(-1)" aria-label="Semana anterior">‹</button>
+    <span class="semana-label">{{ semanaLabel() }}</span>
+    <div class="header-derecha">
+      <button class="nav-btn" (click)="irSemana(1)" aria-label="Semana siguiente">›</button>
+      <button class="btn-bloques" (click)="abrirGestionBloques()" aria-label="Gestionar bloques fijos">⊞</button>
+    </div>
+  </header>
+
+  @if (error()) {
+    <div class="error-banner" (click)="limpiarError()">{{ error() }} ✕</div>
+  }
+
+  @if (cargando()) {
+    <div class="estado-mensaje">Cargando…</div>
+  } @else {
+
+    <!-- Grilla de días: CSS Grid 3 filas × 8 columnas (1 horas + 7 días) -->
+    <div class="grilla-scroll">
+      <div class="grilla-dias" cdkDropListGroup>
+
+        <!-- FILA 1: Cabeceras ──────────────────────────────── -->
+        <div class="col-horas-header"></div>
+        @for (col of columnas(); track col.dia) {
+          <div class="col-dia-header" [class.hoy-header]="esHoy(col.fecha)">
+            <span class="dia-nombre">{{ col.etiqueta }}</span>
+          </div>
+        }
+
+        <!-- FILA 2: Sección sin hora ────────────────────────── -->
+        <!-- CSS Grid iguala las alturas automáticamente (auto row) -->
+        <div class="sin-hora-espacio"></div>
+        @for (col of columnas(); track col.dia) {
+          <div
+            class="sin-hora"
+            [class.es-hoy]="esHoy(col.fecha)"
+            cdkDropList
+            [cdkDropListData]="col.sinHora"
+            (cdkDropListDropped)="alSoltarSinHora($event, col)">
+
+            @if (col.sinHora.length === 0) {
+              <div class="sin-hora-vacia"></div>
+            }
+
+            @for (t of col.sinHora; track t.id) {
+              <div
+                class="tarjeta tarjeta--sin-hora"
+                [class.estado-no-empezado]="t.estado === 'no_empezado'"
+                [class.estado-en-proceso]="t.estado === 'en_proceso'"
+                [class.estado-completado]="t.estado === 'completado'"
+                [class.modo-borrado]="tarjetaEnModoBorrado() === t.id"
+                cdkDrag
+                [cdkDragData]="t"
+                (touchstart)="alPresionar(t.id)"
+                (touchend)="alSoltarPresion()"
+                (touchmove)="alSoltarPresion()"
+                (mousedown)="alPresionar(t.id)"
+                (mouseup)="alSoltarPresion()">
+                <span class="chip-estado" (click)="cambiarEstado(t); $event.stopPropagation()"></span>
+                <span class="tarjeta-titulo">{{ t.titulo }}</span>
+                @if (tarjetaEnModoBorrado() === t.id) {
+                  <button class="btn-borrar-tarjeta" (click)="confirmarBorrado(t.id, $event)" aria-label="Eliminar tarjeta">✕</button>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- FILA 3: Etiquetas de hora + Grillas horarias ───── -->
+        <div class="col-horas-grid">
+          @for (h of horasGrilla; track h) {
+            <div class="etiqueta-hora" [style.height.px]="pxPorHora">{{ formatoHora(h) }}</div>
+          }
+        </div>
+        @for (col of columnas(); track col.dia) {
+          <div
+            class="grilla-horaria"
+            #grillaRef
+            [class.es-hoy]="esHoy(col.fecha)"
+            [style.height.px]="altoGrillaTotal"
+            cdkDropList
+            [cdkDropListData]="col.dia"
+            [cdkDropListSortingDisabled]="true"
+            (cdkDropListDropped)="alSoltarEnGrilla($event, col.dia)"
+            (click)="abrirFormularioPorClick($event, col.dia, grillaRef)">
+
+            <!-- Líneas de hora (visuales) -->
+            @for (h of horasGrilla; track h) {
+              <div class="linea-hora" [style.top.px]="(h - horaInicioGrilla) * pxPorHora"></div>
+            }
+
+            <!-- Bloques fijos (posición absoluta) -->
+            @for (bp of col.bloques; track bp.bloque.id) {
+              <div class="bloque-fijo"
+                   [style.top.px]="bp.topPx"
+                   [style.height.px]="bp.heightPx"
+                   [style.left.%]="bp.leftPct"
+                   [style.width.%]="bp.widthPct"
+                   (click)="$event.stopPropagation()">
+                <span class="bloque-fijo-hora">{{ bp.bloque.hora_inicio.slice(0,5) }}–{{ bp.bloque.hora_fin.slice(0,5) }}</span>
+                <span class="bloque-fijo-titulo">{{ bp.bloque.titulo }}</span>
+              </div>
+            }
+
+            <!-- Tarjetas con hora (posición absoluta) -->
+            @for (tp of col.conHora; track tp.tarjeta.id) {
+              <div
+                class="tarjeta tarjeta--con-hora"
+                [style.top.px]="tp.topPx"
+                [style.height.px]="tp.heightPx"
+                [style.left.%]="tp.leftPct"
+                [style.width.%]="tp.widthPct"
+                [class.estado-no-empezado]="tp.tarjeta.estado === 'no_empezado'"
+                [class.estado-en-proceso]="tp.tarjeta.estado === 'en_proceso'"
+                [class.estado-completado]="tp.tarjeta.estado === 'completado'"
+                [class.modo-borrado]="tarjetaEnModoBorrado() === tp.tarjeta.id"
+                (click)="$event.stopPropagation()"
+                (touchstart)="alPresionar(tp.tarjeta.id)"
+                (touchend)="alSoltarPresion()"
+                (touchmove)="alSoltarPresion()"
+                (mousedown)="alPresionar(tp.tarjeta.id)"
+                (mouseup)="alSoltarPresion()"
+                cdkDrag
+                [cdkDragData]="tp.tarjeta">
+                <ng-template cdkDragPlaceholder></ng-template>
+                <span class="chip-estado" (click)="cambiarEstado(tp.tarjeta); $event.stopPropagation()"></span>
+                <span class="tarjeta-titulo">{{ tp.tarjeta.titulo }}</span>
+                <span class="tarjeta-hora">{{ tp.tarjeta.hora_inicio!.slice(0,5) }}–{{ tp.tarjeta.hora_fin!.slice(0,5) }}</span>
+                @if (tarjetaEnModoBorrado() === tp.tarjeta.id) {
+                  <button class="btn-borrar-tarjeta" (click)="confirmarBorrado(tp.tarjeta.id, $event)" aria-label="Eliminar tarjeta">✕</button>
+                }
+              </div>
+            }
+
+          </div>
+        }
+
+      </div>
+    </div>
+
+  }
+
+  <!-- FAB: nueva tarjeta sin hora por defecto -->
+  <button class="fab" (click)="abrirFormulario()" aria-label="Nueva tarjeta">+</button>
+
+  <!-- Sheet: gestión de bloques fijos -->
+  @if (gestionBloquesAbierta()) {
+    <div class="formulario-overlay" (click)="cerrarGestionBloques()">
+      <div class="bloques-sheet" (click)="$event.stopPropagation()">
+        <div class="sheet-handle"></div>
+        <h2 class="bloques-titulo">Bloques fijos — semana</h2>
+
+        <!-- Lista de bloques existentes -->
+        @if (bloquesOrdenados().length === 0) {
+          <p class="bloques-vacios">Sin bloques esta semana.</p>
+        } @else {
+          @for (b of bloquesOrdenados(); track b.id) {
+            <div class="bloque-item">
+              <span class="bloque-dia">{{ nombresDia[b.dia_semana] }}</span>
+              <span class="bloque-info">
+                {{ b.hora_inicio.slice(0,5) }}–{{ b.hora_fin.slice(0,5) }} · {{ b.titulo }}
+              </span>
+              <button class="btn-eliminar-bloque" (click)="eliminarBloque(b.id)" aria-label="Eliminar bloque">✕</button>
+            </div>
+          }
+        }
+
+        <div class="separador"></div>
+
+        <!-- Formulario para agregar bloque -->
+        <p class="form-subtitulo">Agregar bloque</p>
+
+        <label class="b-label" for="bloque-nombre">Título</label>
+        <input id="bloque-nombre" class="b-input" type="text"
+               placeholder="Ej. Gym, Inglés…"
+               [value]="formBloqueNombre()"
+               (input)="formBloqueNombre.set($any($event.target).value)"
+               autocomplete="off" />
+
+        <label class="b-label" for="bloque-dia">Día</label>
+        <select id="bloque-dia" class="b-input"
+                [value]="formBloqueDia()"
+                (change)="formBloqueDia.set($any($event.target).value)">
+          @for (col of columnas(); track col.dia) {
+            <option [value]="col.dia">{{ col.etiqueta }}</option>
+          }
+        </select>
+
+        <div class="campos-hora-bloque">
+          <div class="b-campo">
+            <label class="b-label" for="bloque-inicio">Inicio</label>
+            <input id="bloque-inicio" class="b-input" type="time"
+                   [value]="formBloqueInicio()"
+                   (change)="alCambiarBloqueInicio($any($event.target).value)" />
+          </div>
+          <div class="b-campo">
+            <label class="b-label" for="bloque-fin">Fin</label>
+            <input id="bloque-fin" class="b-input" type="time"
+                   [value]="formBloqueFin()"
+                   (change)="formBloqueFin.set($any($event.target).value)"
+                   [attr.disabled]="!formBloqueInicio() ? true : null" />
+          </div>
+        </div>
+
+        <div class="form-acciones">
+          <button class="btn-cancelar" type="button" (click)="cerrarGestionBloques()">Cancelar</button>
+          <button class="btn-guardar" type="button"
+                  [disabled]="!formBloqueNombre().trim() || !formBloqueInicio() || !formBloqueFin() || formBloqueGuardando()"
+                  (click)="crearBloque()">
+            {{ formBloqueGuardando() ? 'Guardando…' : 'Guardar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Overlay con formulario de creación -->
+  @if (formularioAbierto()) {
+    <div class="formulario-overlay" (click)="cerrarFormulario()">
+      <app-form-tarjeta
+        [semanaInicio]="semanaInicioISO()"
+        [diaPreseleccionado]="contextoFormulario().dia"
+        [horaPreseleccionada]="contextoFormulario().hora"
+        (guardado)="alGuardar($event)"
+        (cancelado)="cerrarFormulario()"
+        (click)="$event.stopPropagation()">
+      </app-form-tarjeta>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,109 @@
+<div class="reporte-page">
+
+  <header class="reporte-header">
+    <a class="btn-volver" routerLink="/hoy">← Hoy</a>
+    <h1 class="reporte-titulo">Reporte</h1>
+  </header>
+
+  @if (error()) {
+    <div class="error-banner" (click)="limpiarError()">{{ error() }} ✕</div>
+  }
+
+  <div class="reporte-cuerpo">
+
+    <!-- Botones rápidos -->
+    <div class="botones-rapidos">
+      <button class="btn-rapido" [class.activo]="botonActivo() === 'semana'"
+              (click)="seleccionar('semana')">Esta semana</button>
+      <button class="btn-rapido" [class.activo]="botonActivo() === 'semana_pasada'"
+              (click)="seleccionar('semana_pasada')">Sem. pasada</button>
+      <button class="btn-rapido" [class.activo]="botonActivo() === 'mes'"
+              (click)="seleccionar('mes')">Este mes</button>
+      <button class="btn-rapido" [class.activo]="botonActivo() === '7dias'"
+              (click)="seleccionar('7dias')">Últ. 7 días</button>
+    </div>
+
+    <!-- Rango manual -->
+    <div class="rango-manual">
+      <input
+        class="rango-fecha-input"
+        type="date"
+        [value]="rangoDesde()"
+        (change)="onDesdeChange($any($event.target).value)" />
+      <span class="rango-sep">–</span>
+      <input
+        class="rango-fecha-input"
+        type="date"
+        [value]="rangoHasta()"
+        (change)="onHastaChange($any($event.target).value)" />
+    </div>
+
+    @if (cargando()) {
+      <div class="estado-mensaje">Cargando…</div>
+    } @else if (rangoDesde() && rangoHasta()) {
+
+      <!-- Sección: Tarjetas -->
+      <section class="seccion-reporte">
+        <h2 class="seccion-titulo-rep">Tarjetas</h2>
+        @if (resumenTarjetas().total === 0) {
+          <p class="seccion-vacia">Sin tarjetas en este período.</p>
+        } @else {
+          <div class="stat-principal">
+            <span class="stat-numero">{{ resumenTarjetas().completadas }}/{{ resumenTarjetas().total }}</span>
+            <div class="barra">
+              <div class="barra-fill" [style.width.%]="resumenTarjetas().porcentaje"></div>
+            </div>
+            <span class="stat-porcentaje">{{ resumenTarjetas().porcentaje }}%</span>
+          </div>
+          @if (resumenTarjetas().incompletas.length > 0) {
+            <div class="incompletas-lista">
+              <p class="incompletas-label">Sin completar</p>
+              @for (titulo of resumenTarjetas().incompletas; track titulo) {
+                <div class="incompleta-item">{{ titulo }}</div>
+              }
+            </div>
+          }
+        }
+      </section>
+
+      <!-- Sección: Hábitos -->
+      <section class="seccion-reporte">
+        <h2 class="seccion-titulo-rep">Hábitos</h2>
+        @if (resumenHabitos().length === 0) {
+          <p class="seccion-vacia">Sin hábitos aplicables en este período.</p>
+        } @else {
+          @for (item of resumenHabitos(); track item.habito.id) {
+            <div class="habito-rep-fila">
+              <span class="habito-rep-nombre">{{ item.habito.titulo }}</span>
+              <span class="habito-rep-stat">{{ item.cumplidos }}/{{ item.aplicables }}</span>
+              <div class="barra">
+                <div class="barra-fill" [style.width.%]="item.porcentaje"></div>
+              </div>
+              <span class="habito-rep-pct">{{ item.porcentaje }}%</span>
+            </div>
+          }
+        }
+      </section>
+
+      <!-- Sección: Notas del día -->
+      <section class="seccion-reporte">
+        <h2 class="seccion-titulo-rep">Notas del día</h2>
+        @if (notas().length === 0) {
+          <p class="seccion-vacia">Sin notas en este período.</p>
+        } @else {
+          @for (nota of notas(); track nota.id) {
+            <div class="nota-rep-item">
+              <span class="nota-rep-fecha">{{ formatFecha(nota.fecha) }}</span>
+              <p class="nota-rep-contenido">{{ nota.contenido }}</p>
+            </div>
+          }
+        }
+      </section>
+
+    } @else {
+      <div class="estado-mensaje">Seleccioná un rango para ver el reporte.</div>
+    }
+
+  </div>
+
+</div>

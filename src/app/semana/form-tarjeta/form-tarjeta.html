@@ -1,0 +1,66 @@
+<div class="sheet" role="dialog" aria-modal="true" aria-label="Nueva tarjeta">
+  <div class="sheet-handle"></div>
+
+  <h2 class="sheet-titulo">Nueva tarjeta</h2>
+
+  @if (errorMsg) {
+    <p class="error-msg">{{ errorMsg }}</p>
+  }
+
+  <div class="campo">
+    <label for="titulo">Título</label>
+    <input
+      id="titulo"
+      type="text"
+      [(ngModel)]="titulo"
+      name="titulo"
+      placeholder="¿Qué hay que hacer?"
+      autocomplete="off"
+      autofocus />
+  </div>
+
+  <div class="campo">
+    <label for="descripcion">Descripción</label>
+    <textarea
+      id="descripcion"
+      [(ngModel)]="descripcion"
+      name="descripcion"
+      placeholder="Descripción (opcional)"
+      rows="3"></textarea>
+  </div>
+
+  <div class="campo">
+    <label for="dia">Día</label>
+    <select id="dia" [(ngModel)]="diaSemana" name="dia">
+      @for (op of opcionesDias(); track op.valor) {
+        <option [value]="op.valor">{{ op.etiqueta }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="campos-hora">
+    <div class="campo">
+      <label for="horaInicio">Hora inicio</label>
+      <input
+        id="horaInicio"
+        type="time"
+        [ngModel]="horaInicio"
+        (ngModelChange)="alCambiarHoraInicio($event)"
+        name="horaInicio" />
+    </div>
+    <div class="campo">
+      <label for="horaFin">Hora fin</label>
+      <input
+        id="horaFin"
+        type="time"
+        [(ngModel)]="horaFin"
+        name="horaFin"
+        [disabled]="!horaInicio" />
+    </div>
+  </div>
+
+  <div class="acciones">
+    <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+    <button type="button" class="btn-guardar" (click)="guardar()">Guardar</button>
+  </div>
+</div>
