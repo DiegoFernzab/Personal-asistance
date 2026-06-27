@@ -126,7 +126,7 @@
                 (mouseup)="alSoltarPresion()"
                 cdkDrag
                 [cdkDragData]="tp.tarjeta"
-                [cdkDragStartDelay]="600"
+                [cdkDragStartDelay]="600">
                 <ng-template cdkDragPlaceholder></ng-template>
                 <span class="chip-estado" (click)="cambiarEstado(tp.tarjeta); $event.stopPropagation()"></span>
                 <span class="tarjeta-titulo">{{ tp.tarjeta.titulo }}</span>
