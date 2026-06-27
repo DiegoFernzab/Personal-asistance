@@ -4,7 +4,7 @@ $horas-grilla: 15;                          // 7:00 a 22:00
 $alto-grilla-total: $px-hora * $horas-grilla; // 960px
 
 $ancho-col-horas: 44px;
-$ancho-col-dia: 130px;
+$ancho-col-dia: 88px;
 $alto-header-dia: 40px;
 $alto-sin-hora-min: 32px;
 
@@ -228,6 +228,8 @@ $color-bloque-fijo-borde: #6366f1;
 
 .tarjeta--sin-hora {
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 
   &:active { cursor: grabbing; }
 
@@ -246,6 +248,8 @@ $color-bloque-fijo-borde: #6366f1;
   // width/height/top/left se aplican vía bindings [style.*]
   cursor: grab;
   z-index: 2; // encima de .linea-hora
+  user-select: none;
+  -webkit-user-select: none;
 
   .tarjeta-titulo {
     display: -webkit-box;

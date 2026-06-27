@@ -54,10 +54,11 @@
                 [class.modo-borrado]="tarjetaEnModoBorrado() === t.id"
                 cdkDrag
                 [cdkDragData]="t"
-                (touchstart)="alPresionar(t.id)"
+                [cdkDragStartDelay]="600"
+                (touchstart)="alPresionar(t.id, $event)"
                 (touchend)="alSoltarPresion()"
                 (touchmove)="alSoltarPresion()"
-                (mousedown)="alPresionar(t.id)"
+                (mousedown)="alPresionar(t.id, $event)"
                 (mouseup)="alSoltarPresion()">
                 <span class="chip-estado" (click)="cambiarEstado(t); $event.stopPropagation()"></span>
                 <span class="tarjeta-titulo">{{ t.titulo }}</span>
@@ -118,13 +119,14 @@
                 [class.estado-completado]="tp.tarjeta.estado === 'completado'"
                 [class.modo-borrado]="tarjetaEnModoBorrado() === tp.tarjeta.id"
                 (click)="$event.stopPropagation()"
-                (touchstart)="alPresionar(tp.tarjeta.id)"
+                (touchstart)="alPresionar(tp.tarjeta.id, $event)"
                 (touchend)="alSoltarPresion()"
                 (touchmove)="alSoltarPresion()"
-                (mousedown)="alPresionar(tp.tarjeta.id)"
+                (mousedown)="alPresionar(tp.tarjeta.id, $event)"
                 (mouseup)="alSoltarPresion()"
                 cdkDrag
-                [cdkDragData]="tp.tarjeta">
+                [cdkDragData]="tp.tarjeta"
+                [cdkDragStartDelay]="600"
                 <ng-template cdkDragPlaceholder></ng-template>
                 <span class="chip-estado" (click)="cambiarEstado(tp.tarjeta); $event.stopPropagation()"></span>
                 <span class="tarjeta-titulo">{{ tp.tarjeta.titulo }}</span>

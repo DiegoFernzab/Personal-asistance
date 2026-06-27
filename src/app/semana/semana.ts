@@ -419,7 +419,8 @@ export class Semana implements OnInit {
 
   // ── Formulario de tarjetas ─────────────────────────────────
 
-  alPresionar(id: string) {
+  alPresionar(id: string, event: Event) {
+    event.preventDefault();
     if (this.tarjetaEnModoBorrado() === id) {
       this.cancelarModoBorrado();
       return;
