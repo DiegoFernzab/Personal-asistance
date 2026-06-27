@@ -4,7 +4,7 @@ $horas-grilla: 15;                          // 7:00 a 22:00
 $alto-grilla-total: $px-hora * $horas-grilla; // 960px
 
 $ancho-col-horas: 44px;
-$ancho-col-dia: 88px;
+$ancho-col-dia: 130px;
 $alto-header-dia: 40px;
 $alto-sin-hora-min: 32px;
 
@@ -559,4 +559,26 @@ $color-bloque-fijo-borde: #6366f1;
 
 .sin-hora.cdk-drop-list-dragging .tarjeta--sin-hora:not(.cdk-drag-placeholder) {
   transition: transform 200ms ease;
+}
+
+// ── Responsive: móvil (≤768px) ────────────────────────────
+@media (max-width: 768px) {
+  .grilla-dias {
+    grid-template-columns: $ancho-col-horas repeat(7, 88px);
+  }
+
+  .tarjeta--con-hora {
+    flex-wrap: wrap;
+
+    .tarjeta-titulo {
+      flex-basis: 0;
+      min-width: 0;
+      -webkit-line-clamp: 2;
+    }
+
+    .tarjeta-hora {
+      flex-basis: 100%;
+      white-space: normal;
+    }
+  }
 }
